@@ -2,10 +2,6 @@
 
 **Sposuify** is a simple music player for osu! modded from [Osu.Music](https://github.com/Laritello/osu-music) and support Rich Presence Discord.
 
-<p align="center">
-  <img width=800 src="https://cdn.discordapp.com/attachments/759722762734141490/1163149241863110738/image.png?ex=653e8625&is=652c1125&hm=cfdf1a247ee1dc6c6e704a869817ff99ae1b77d28c7e8a58dbc3baba0b614651&">
-</p>
-
 ## Download
 
 * Head over [Release Page](https://github.com/iseizuu/Sposuify/releases)
@@ -17,7 +13,11 @@
 
 ## Features
 
-Support discord rich presence, and auto update when pause, play, and detailed song title and artist.
+- Integrated with Discord Rich Presence (Listening Activity).
+- Added Songs cover image thumbnail.
+- Using FFmpeg as audio encoder.
+- Play, repeat, pause, seek, randomize button.
+- Playlist Support.
 
 ## License
 
@@ -27,8 +27,12 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 This project is not mine, All resource and copyright by [Laritello](https://github.com/Laritello) Go to the original repository [Osu.Music](https://github.com/Laritello/osu-music)
 
-## Screenshot
+## Known Bugs
 
-<p align="center">
-  <img width=400 src="https://cdn.discordapp.com/attachments/759722762734141490/1163151227064959066/image.png?ex=653e87fe&is=652c12fe&hm=71751afdc5968d2e45ed73747c64838acc42a820c2515ba8ae4399c7868f980e&">
-</p>
+* in original repository there is a bug Mp3fileReader didnt support bitrate changes, but fixed in latest version, change encoder to FFmpeg.
+
+## Screenshots
+
+<a href="https://ibb.co.com/5W82p435"><img src="https://i.ibb.co.com/QFNXSQV6/image.png" alt="image" border="0"></a>
+
+<a href="https://imgbb.com/"><img src="https://i.ibb.co.com/Hp4z7L5h/image.png" alt="image" border="0"></a>
