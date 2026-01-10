@@ -11,6 +11,8 @@
 	<StartupObject>Osu.Music.App</StartupObject>
 	</PropertyGroup>
 	<ItemGroup>
+	<PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" />
+	<PackageReference Include="FFMpegCore" Version="5.4.0" />
 	<PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
 	<PackageReference Include="NuGet.CommandLine" Version="5.11.3">
 		<PrivateAssets>all</PrivateAssets>
@@ -34,7 +36,7 @@
 	    <NugetTools>$(PkgNuGet_CommandLine)\tools</NugetTools>
 	    <SquirrelTools>$(Pkgsquirrel_windows)\tools</SquirrelTools>
 
-	    <Version>0.2.9</Version>
+	    <Version>2.0.0</Version>
 
 	    <NuspecFile>$(SolutionDir)src\osu.Music\ReleaseSpec.nuspec</NuspecFile>
     </PropertyGroup>

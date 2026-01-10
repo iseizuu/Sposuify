@@ -1,5 +1,6 @@
 ﻿using Osu.Music.Services.Audio;
 using Osu.Music.UI.SpectrumAnalyzers.Default;
+using System;
 using System.Windows.Controls;
 
 namespace Osu.Music.UI.SpectrumAnalyzers
@@ -41,11 +42,20 @@ namespace Osu.Music.UI.SpectrumAnalyzers
 
         private void UpdateBars(float[] data)
         {
-            for (var i = 0; i < ColumnsCount; i++)
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                var bar = Bars.Children[i] as SpectrumBar;
-                bar.Value = data[i];
-            }
+                for (var i = 0; i < ColumnsCount; i++)
+                {
+                    if (i < Bars.Children.Count)
+                    {
+                        var bar = Bars.Children[i] as SpectrumBar;
+                        if (bar != null)
+                        {
+                            bar.Value = data[i];
+                        }
+                    }
+                }
+            }));
         }
     }
 }

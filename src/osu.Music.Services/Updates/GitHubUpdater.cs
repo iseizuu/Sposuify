@@ -53,7 +53,7 @@ namespace Osu.Music.Services.Updates
 
                     await Manager.UpdateApp();
 
-                    var latestExe = Path.Combine(Manager.RootAppDirectory, string.Concat("app-", lastVersion.Version), "Osu.Music.exe");
+                    var latestExe = Path.Combine(Manager.RootAppDirectory, string.Concat("app-", lastVersion.Version), "Sposuify.exe");
 
                     System.Diagnostics.Process.Start(latestExe);
                     Application.Current.Shutdown();

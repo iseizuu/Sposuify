@@ -29,8 +29,11 @@
     <None Remove="Resources\Images\osu-logo.png" />
     <None Remove="Resources\Images\sidebar-background.png" />
     <None Remove="Views\Logo.png" />
+    <None Remove="Views\sidebar-background.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" />
+    <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.37" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
@@ -59,6 +62,7 @@
     <Resource Include="Resources\Images\Logo\Logo.png" />
     <Resource Include="Resources\Images\sidebar-background.png" />
     <Resource Include="Views\Logo.png" />
+    <Resource Include="Views\sidebar-background.png" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Resources\Static\licenses.json">

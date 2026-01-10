@@ -37,7 +37,7 @@
                             CommandParameter="{Binding ElementName=SearchField, Path=Text}"/>
                 </Grid>
                 <ListView x:Name="SongsList" Style="{DynamicResource ListViewBeatmaps}" Grid.Row="1" 
-                  ItemsSource="{Binding DataContext.Model.Beatmaps, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}" 
+                  ItemsSource="{Binding BeatmapsView}" 
                   SelectedItem="{Binding DataContext.Model.SelectedBeatmap, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}" 
                   Tag="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}"
                   HorizontalContentAlignment="Stretch">

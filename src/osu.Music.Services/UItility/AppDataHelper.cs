@@ -6,7 +6,7 @@ namespace Osu.Music.Services.UItility
 {
     public static class AppDataHelper
     {
-        private static readonly string AppName = "osu.Music";
+        private static readonly string AppName = "Sposuify";
         public static string Path => GetPath();
         public static string PlaylistDirectory => GetPlaylistsDirectory();
 

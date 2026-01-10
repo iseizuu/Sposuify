@@ -1,41 +1,69 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.IO;
 
 namespace Osu.Music.Services.UItility
 {
     public static class PathHelper
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         public static string GetOsuInstallationFolder()
         {
-            // Kudos to https://osu.ppy.sh/community/forums/topics/381311?n=3
-            const string keyName1 = @"HKEY_CLASSES_ROOT\osu\shell\open\command";
-            const string keyName2 = @"HKEY_CLASSES_ROOT\osu!\shell\open\command";
-            string path;
-
-            try
+            string[] registryKeys =
             {
-                path = Registry.GetValue(keyName1, string.Empty, string.Empty).ToString();
+                @"HKEY_CLASSES_ROOT\osu\shell\open\command",
+                @"HKEY_CLASSES_ROOT\osu!\shell\open\command"
+            };
 
-                if (path == string.Empty)
-                    path = Registry.GetValue(keyName2, string.Empty, string.Empty).ToString();
+            foreach (var key in registryKeys)
+            {
+                var value = Registry.GetValue(key, string.Empty, null) as string;
 
-                if (path != string.Empty)
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                try
                 {
-                    path = path.Remove(0, 1);
-                    path = path.Split('\"')[0];
-                    path = Path.GetDirectoryName(path);
-                }
+                    // value example:
+                    // "C:\Users\User\AppData\Local\osu!\osu!.exe" "%1"
+                    value = value.Trim();
 
-                return path ?? null;
+                    if (value.StartsWith("\""))
+                        value = value.Substring(1);
+
+                    value = value.Split('\"')[0];
+
+                    var dir = Path.GetDirectoryName(value);
+                    if (Directory.Exists(dir))
+                        return dir;
+                }
+                catch
+                {
+                    // ignore malformed registry values
+                }
             }
-            catch
+
+            string[] fallbackPaths =
             {
-                return "";
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "osu!"
+                ),
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "osu!"
+                ),
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                    "osu!"
+                )
+            };
+
+            foreach (var path in fallbackPaths)
+            {
+                if (Directory.Exists(path))
+                    return path;
             }
+            return string.Empty;
         }
     }
 }

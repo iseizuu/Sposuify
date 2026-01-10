@@ -15,6 +15,18 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_50FA6CC17AF04601A1DAAE88D76019A9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_72751D4087B343828F85D2D1C68072B1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B29CB54C360C4585A4777AA5A5BEA1AF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -132,6 +144,46 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_50FA6CC17AF04601A1DAAE88D76019A9"
+            {
+            "SourcePath" = "8:..\\..\\..\\AppData\\Local\\Temp\\Rar$DRa9472.22056\\ffmpeg-8.0.1-essentials_build\\bin\\ffprobe.exe"
+            "TargetName" = "8:ffprobe.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_95163FA26D9644348D9788BAAB7E2B6F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72751D4087B343828F85D2D1C68072B1"
+            {
+            "SourcePath" = "8:..\\..\\..\\AppData\\Local\\Temp\\Rar$DRa9472.22056\\ffmpeg-8.0.1-essentials_build\\bin\\ffmpeg.exe"
+            "TargetName" = "8:ffmpeg.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_95163FA26D9644348D9788BAAB7E2B6F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B29CB54C360C4585A4777AA5A5BEA1AF"
             {
             "SourcePath" = "8:..\\src\\osu.Music.UI\\Resources\\Images\\Logo\\Logo.ico"
@@ -208,15 +260,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Sposuify"
-        "ProductCode" = "8:{C83F03B0-DA5A-4CE2-9315-42D9977D4563}"
-        "PackageCode" = "8:{4B244DB4-9274-4187-827C-B6E3859D2629}"
+        "ProductCode" = "8:{7F2790B2-6C12-4C4E-893B-A6A0321A5AA7}"
+        "PackageCode" = "8:{D59D34DF-3821-4157-9EA3-A6A42A6A0A28}"
         "UpgradeCode" = "8:{90A7FB41-B6EA-4775-A230-D5A07A87E803}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:2.0.0"
         "Manufacturer" = "8:iSeizuu"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/iseizuu"

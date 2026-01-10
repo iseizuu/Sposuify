@@ -116,7 +116,7 @@ namespace Osu.Music.UI.ViewModels
             DiscordManager.Enabled = Settings.DiscordRpcEnabled;
 
             if (!DiscordManager.Enabled)
-                DiscordManager.ClearPresence();
+                DiscordManager.Dispose();
         }
 
         private void UpdateOsuFolder()

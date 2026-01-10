@@ -351,3 +351,5 @@ MigrationBackup/
 
 # Squirrel deploy folder
 !deploy/**
+
+Setup1/**

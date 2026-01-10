@@ -32,6 +32,7 @@ namespace Osu.Music.UI.ViewModels
     {
         #region Properties
         private MainModel _model;
+
         public MainModel Model
         {
             get => _model;
@@ -174,7 +175,7 @@ namespace Osu.Music.UI.ViewModels
         {
             _audioProgressTimer = new DispatcherTimer(DispatcherPriority.Render)
             {
-                Interval = TimeSpan.FromMilliseconds(100)
+                Interval = TimeSpan.FromMilliseconds(16)
             };
 
             _audioProgressTimer.Tick += UpdateBeatmapProgress;
@@ -222,7 +223,7 @@ namespace Osu.Music.UI.ViewModels
                 Model.Playlists = await PlaylistManager.LoadAsync(Model.Beatmaps);
                 Model.Collections = await CollectionManager.LoadAsync(Settings.OsuFolder, Model.Beatmaps);
 
-                SelectedPage = new SongsViewModel();
+                SelectedPage = new SongsViewModel(Model);
 
                 if (Model.PlaybackInitializationRequired)
                 {
@@ -252,12 +253,8 @@ namespace Osu.Music.UI.ViewModels
 
         private void PlayBeatmap(Beatmap beatmap)
         {
-            // If user tried to start playback without selected song
-            // Select first song if possible
             CheckBeatmap(ref beatmap);
 
-            // If new song was selected
-            // Update playback
             if (Playback.Beatmap != beatmap)
             {
                 Model.PlayingBeatmap = beatmap;
@@ -267,9 +264,10 @@ namespace Osu.Music.UI.ViewModels
                 DiscordManager.Update(Model.PlayingBeatmap);
             }
 
-            // TODO: Rework this section
-            if (Playback.PlaybackState != NAudio.Wave.PlaybackState.Paused)
-                Playback.Load();
+            else if (Playback.PlaybackState == NAudio.Wave.PlaybackState.Stopped)
+            {
+                Playback.Load(); 
+            }
 
             if (Playback.PlaybackState == NAudio.Wave.PlaybackState.Paused)
                 DiscordManager.Resume(Playback.CurrentTime);
@@ -335,26 +333,51 @@ namespace Osu.Music.UI.ViewModels
 
         private int GetNextMapIndex(Beatmap beatmap)
         {
+            if (Model.SelectedBeatmaps == null || Model.SelectedBeatmaps.Count == 0)
+                return 0;
+
             int index;
+
             if (Playback.Shuffle)
             {
                 Random rnd = new Random();
                 index = rnd.Next(0, Model.SelectedBeatmaps.Count);
+                return index;
             }
-            else
-            {
-                index = Model.SelectedBeatmaps.IndexOf(beatmap) + 1;
-            }
+            var view = CollectionViewSource.GetDefaultView(Model.SelectedBeatmaps);
+            var sortedList = view.Cast<Beatmap>().ToList();
+            int currentIndex = sortedList.IndexOf(beatmap);
 
-            return index >= Model.SelectedBeatmaps.Count ? 0 : index;
+            index = currentIndex + 1;
+
+            return index >= sortedList.Count ? 0 : index;
+        }
+
+        private void Playback_BeatmapEnded(object sender, BeatmapEventArgs e)
+        {
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+
+                if (Playback.Repeat)
+                {
+                    PlayBeatmap(Model.PlayingBeatmap);
+                }
+                else
+                {
+                    NextBeatmap(Model.PlayingBeatmap);
+                }
+            });
         }
 
         private void ScrollBeatmap(TimeSpan? progress)
         {
             if (progress.HasValue)
-                _playback.CurrentTime = progress.Value;
+            {
+                _playback.Seek(progress.Value);
 
-            DiscordManager.Resume(_playback.CurrentTime);
+                DiscordManager.Resume(_playback.CurrentTime);
+            }
         }
 
         private void OpenPage(string pageName)
@@ -362,7 +385,7 @@ namespace Osu.Music.UI.ViewModels
             switch (pageName)
             {
                 case "Songs":
-                    SelectedPage = new SongsViewModel();
+                    SelectedPage = new SongsViewModel(Model);
                     break;
                 case "Playlists":
                     SelectedPage = new PlaylistsViewModel(Model.Playlists, Model.DialogService);
@@ -487,7 +510,7 @@ namespace Osu.Music.UI.ViewModels
             catch { }
         }
 
-        private void OpenGitHub() => Process.Start(new ProcessStartInfo("cmd", $"/c start https://github.com/Laritello/osu-music") { CreateNoWindow = true });
+        private void OpenGitHub() => Process.Start(new ProcessStartInfo("cmd", $"/c start https://github.com/iseizuu/Sposuify") { CreateNoWindow = true });
 
         #region Handlers
         private void UpdateBeatmapProgress(object sender, EventArgs e)
@@ -497,13 +520,7 @@ namespace Osu.Music.UI.ViewModels
             Model.Progress = Playback.CurrentTime.TotalSeconds / Playback.TotalTime.TotalSeconds;
         }
 
-        private void Playback_BeatmapEnded(object sender, BeatmapEventArgs e)
-        {
-            if (Playback.Repeat)
-                PlayBeatmap(Model.SelectedBeatmap);
-            else
-                NextBeatmap(Model.SelectedBeatmap);
-        }
+
 
         private void Playback_FftCalculated(object sender, FftEventArgs e) => Visualization.OnFftCalculated(e.Result);
 

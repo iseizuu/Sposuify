@@ -161,6 +161,7 @@ namespace Osu.Music.Common.Models
         /// </summary>
         [JsonIgnore]
         public string BackgroundFilePath { get => (Directory == null || BackgroundFileName == null) ? "" : Path.Combine(Directory, BackgroundFileName); }
+        public string source { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -187,5 +188,17 @@ namespace Osu.Music.Common.Models
             Hashes = new List<string>();
             //Image = new NotifyTaskCompletion<Bitmap>(BackgroundRepository.GetImageAsync(this));
         }
+
+        public string MD5Hash { get; set; }
+
+        [JsonIgnore]
+        public string BackgroundPath
+        {
+            get
+            {
+                return Osu.Music.Common.Utility.BeatmapFileReader.GetBackgroundPath(this);
+            }
+        }
+
     }
 }

@@ -60,19 +60,17 @@ namespace Osu.Music.Services.Audio
 
         public int Read(float[] buffer, int offset, int count)
         {
-            try
-            {
-                sampleCount = source.Read(buffer, offset, count);
+            int read = source.Read(buffer, offset, count);
 
-                for (int n = 0; n < sampleCount; n += channels)
+            if (PerformFFT && FftCalculated != null && read > 0)
+            {
+                for (int n = 0; n < read; n += channels)
+                {
                     Add(buffer[n + offset]);
+                }
+            }
 
-                return sampleCount;
-            }
-            catch
-            {
-                return 0;
-            }
+            return read;
         }
     }
 }

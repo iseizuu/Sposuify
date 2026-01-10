@@ -64,7 +64,7 @@
                         </ControlTemplate>
                     </ItemsControl.Template>
                 </ItemsControl>
-                <TextBlock Text="Social" Style="{DynamicResource MenuHeader}"/>
+                <TextBlock Text="Discord Presence" Style="{DynamicResource MenuHeader}"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Show current beatmap in Discord activity" Width="514"/>
                     <CheckBox x:Name="CheckBoxDiscordRpc" Style="{DynamicResource CheckBoxAsToggleStyle}" IsChecked="{Binding Settings.DiscordRpcEnabled}">
