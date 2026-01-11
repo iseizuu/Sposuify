@@ -1,35 +1,61 @@
 # Sposuify
 
-**Sposuify** is a simple music player for osu! modded from [Osu.Music](https://github.com/Laritello/osu-music) and support Rich Presence Discord.
+**Sposuify** is a simple music player for osu! modded from [Osu.Music](https://github.com/Laritello/osu-music) and supports Discord Rich Presence.
+
+---
 
 ## Download
 
-* Head over [Release Page](https://github.com/iseizuu/Sposuify/releases)
+Head over to the **Release Page**  
+
+- Download: [UPDATE V.2.0.1](https://github.com/iseizuu/Sposuify/releases)  
+
+---
+
+## Changelogs
+
+- Fixed FFmpeg audio stream stopping after **5 minutes**
+- Fixed crash when osu! is installed in a **custom drive** (for example `F:\osu!`)
+
+---
 
 ## Requirements
 
-* Windows 7 or higher
-* .NET Core 3.1
+- Windows 7 or higher  
+- .NET Core 3.1  
+
+---
 
 ## Features
 
-- Integrated with Discord Rich Presence (Listening Activity).
-- Added Songs cover image thumbnail.
-- Using FFmpeg as audio encoder.
-- Play, repeat, pause, seek, randomize button.
-- Playlist Support.
+- Integrated with Discord Rich Presence (Listening Activity)  
+- Songs cover image thumbnails  
+- Uses **FFmpeg** for audio decoding  
+- Play, pause, seek, repeat, shuffle  
+- Playlist support  
+
+---
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
-## Disclaimer
+---
 
-This project is not mine, All resource and copyright by [Laritello](https://github.com/Laritello) Go to the original repository [Osu.Music](https://github.com/Laritello/osu-music)
+## ⚠ Disclaimer
+
+This project is not mine.  
+All resources and original copyrights belong to **[Laritello](https://github.com/Laritello)**.  
+Original project: https://github.com/Laritello/osu-music  
+
+---
 
 ## Known Bugs
 
-* in original repository there is a bug Mp3fileReader didnt support bitrate changes, but fixed in latest version, change encoder to FFmpeg.
+- In the original repository, `Mp3FileReader` did not support variable bitrate (VBR) MP3 files.  
+  This has been fixed in Sposuify by switching to **FFmpeg** as the audio engine.
+
+---
 
 ## Screenshots
 

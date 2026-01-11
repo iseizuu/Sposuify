@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Osu.Music.Services.IO
 {
@@ -15,8 +16,10 @@ namespace Osu.Music.Services.IO
         {
             return await Task.Run(() =>
             {
-                if (!Directory.Exists(osuFolder))
-                    throw new ArgumentException("The specified folder does not exist.");
+                if (string.IsNullOrWhiteSpace(osuFolder) || !Directory.Exists(osuFolder))
+                {
+                    return new ObservableCollection<Collection>();
+                }
 
                 ObservableCollection<Collection> collections = new ObservableCollection<Collection>();
 

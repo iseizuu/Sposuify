@@ -353,3 +353,4 @@ MigrationBackup/
 !deploy/**
 
 Setup1/**
+deploy/**

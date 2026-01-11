@@ -3,6 +3,7 @@ using Osu.Music.Common.Structures;
 using Prism.Mvvm;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Osu.Music.Common.Models
 {
@@ -15,8 +16,16 @@ namespace Osu.Music.Common.Models
             get => _osuFolder;
             set
             {
-                SetProperty(ref _osuFolder, value);
-                OsuFolderChanged?.Invoke(_osuFolder);
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                var normalized = Path.GetFullPath(value.TrimEnd('\\', '/'));
+
+                if (string.Equals(_osuFolder, normalized, System.StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                SetProperty(ref _osuFolder, normalized);
+                OsuFolderChanged?.Invoke(normalized);
             }
         }
 

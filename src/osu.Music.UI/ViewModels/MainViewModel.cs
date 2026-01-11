@@ -213,10 +213,20 @@ namespace Osu.Music.UI.ViewModels
         {
             try
             {
-                if (string.IsNullOrEmpty(Settings.OsuFolder))
+                if (string.IsNullOrWhiteSpace(Settings.OsuFolder) || !Directory.Exists(Settings.OsuFolder))
                 {
-                    Settings.OsuFolder = PathHelper.GetOsuInstallationFolder();
-                    SettingsManager.Save(Settings);
+                    var auto = PathHelper.GetOsuInstallationFolder();
+
+                    if (!string.IsNullOrWhiteSpace(auto) && Directory.Exists(auto))
+                    {
+                        Settings.OsuFolder = auto;
+                        SettingsManager.Save(Settings);
+                    }
+                    else
+                    {
+                        MessageBox.Show("If you first time run Sposuify, please set the Osu! folder manually in the settings.", "Osu! Folder Not Found!", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
                 }
 
                 Model.Beatmaps = await LibraryManager.LoadAsync(Settings.OsuFolder);
@@ -231,11 +241,12 @@ namespace Osu.Music.UI.ViewModels
                     LoadSavedPlayback();
                 }
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                MessageBox.Show(E.Message);
+                MessageBox.Show(e.ToString());
             }
         }
+
 
         private void MuteVolume(bool? mute)
         {

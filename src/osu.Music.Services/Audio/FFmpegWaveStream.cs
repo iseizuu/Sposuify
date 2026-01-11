@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using System.IO;
+using System.Globalization;
 
 public class FFmpegWaveStream : WaveStream
 {
@@ -25,8 +26,8 @@ public class FFmpegWaveStream : WaveStream
 
         _buffer = new BufferedWaveProvider(_format)
         {
-            BufferDuration = TimeSpan.FromMinutes(5),
-            DiscardOnBufferOverflow = true
+            BufferDuration = TimeSpan.FromMinutes(30),
+            DiscardOnBufferOverflow = false
         };
 
         _totalTime = GetDuration(file);
@@ -38,7 +39,7 @@ public class FFmpegWaveStream : WaveStream
             StartInfo = new ProcessStartInfo
             {
                 FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe"),
-                Arguments = $"-hide_banner -loglevel warning {(_startOffset > TimeSpan.Zero ? $"-ss {_startOffset.TotalSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture)} " : "")}-i \"{file}\" -f s16le -ac 2 -ar 44100 pipe:1",
+                Arguments = $"-re {(_startOffset > TimeSpan.Zero ? $"-ss {_startOffset.TotalSeconds.ToString(CultureInfo.InvariantCulture)} " : "")}-i \"{file}\" -f s16le -ac 2 -ar 44100 pipe:1",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
@@ -92,7 +93,6 @@ public class FFmpegWaveStream : WaveStream
 
         int bytesRequired = (int)Math.Min(count, _length - _position);
 
-        // Tunggu data dari FFmpeg jika buffer kosong
         while (_buffer.BufferedBytes < bytesRequired && !_ffmpegCompleted && !_ffmpeg.HasExited)
         {
             Thread.Sleep(5);
