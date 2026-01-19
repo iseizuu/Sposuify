@@ -13,6 +13,7 @@ namespace Osu.Music.Services.Audio
     {
         #region Properties
         public Beatmap Beatmap { get; set; }
+
         private bool _mute = false;
         public bool Mute { get => _mute; set { SetProperty(ref _mute, value); SetVolume(); } }
 
@@ -23,9 +24,11 @@ namespace Osu.Music.Services.Audio
         public bool Shuffle { get; set; }
 
         private bool _isSeeking = false;
+        private bool _isInitialized = false;
+
         public TimeSpan CurrentTime => fileStream != null ? fileStream.CurrentTime : TimeSpan.Zero;
         public TimeSpan TotalTime => fileStream != null ? fileStream.TotalTime : TimeSpan.Zero;
-        public long Position { get => fileStream != null ? fileStream.Position : 0; set { if (fileStream != null) fileStream.Position = value; } }
+        public long Position => fileStream != null ? fileStream.Position : 0;
         public long Length => fileStream != null ? fileStream.Length : 0;
         public PlaybackState PlaybackState => playbackDevice != null ? playbackDevice.PlaybackState : PlaybackState.Stopped;
         #endregion
@@ -38,6 +41,8 @@ namespace Osu.Music.Services.Audio
         private IWavePlayer playbackDevice;
         private WaveStream fileStream;
 
+        #region Core
+
         public void Load()
         {
             Stop();
@@ -46,13 +51,11 @@ namespace Osu.Music.Services.Audio
             OpenFile(TimeSpan.Zero);
         }
 
-        private void CloseFile()
+        public void Load(TimeSpan startTime)
         {
-            if (fileStream != null)
-            {
-                fileStream.Dispose(); 
-                fileStream = null;
-            }
+            CloseFile();
+            EnsureDeviceCreated();
+            OpenFile(startTime);
         }
 
         private void OpenFile(TimeSpan startTime)
@@ -68,28 +71,23 @@ namespace Osu.Music.Services.Audio
                 aggregator.FftCalculated += (s, a) => FftCalculated?.Invoke(this, a);
 
                 playbackDevice.Init(aggregator);
+                _isInitialized = true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error OpenFile: {ex.Message}");
+                _isInitialized = false;
+                Debug.WriteLine($"OpenFile error: {ex.Message}");
             }
         }
 
-        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        private void CloseFile()
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                if (fileStream == null || _isSeeking) return;
-
-                double secondLeft = (fileStream.TotalTime - fileStream.CurrentTime).TotalSeconds;
-                bool isAtEnd = secondLeft < 1.5 || fileStream.Position >= fileStream.Length;
-
-                if (isAtEnd)
-                {
-                    Stop();
-                    BeatmapEnded?.Invoke(this, new BeatmapEventArgs(Beatmap));
-                }
-            });
+                fileStream?.Dispose();
+                fileStream = null;
+            }
+            catch { }
         }
 
         private void EnsureDeviceCreated()
@@ -100,6 +98,8 @@ namespace Osu.Music.Services.Audio
                 playbackDevice.Dispose();
                 playbackDevice = null;
             }
+
+            _isInitialized = false;
             CreateDevice();
         }
 
@@ -110,41 +110,83 @@ namespace Osu.Music.Services.Audio
             playbackDevice.PlaybackStopped += OnPlaybackStopped;
         }
 
-        private void SetVolume() { if (playbackDevice != null) playbackDevice.Volume = _mute ? 0 : _volume; }
-
-        public void Play() { if (PlaybackState != PlaybackState.Playing) playbackDevice?.Play(); }
-        public void Pause() => playbackDevice?.Pause();
-
-        public void Stop()
+        private void SetVolume()
         {
-            playbackDevice?.Stop();
-            if (fileStream != null) fileStream.Position = 0;
+            if (playbackDevice != null)
+                playbackDevice.Volume = _mute ? 0 : _volume;
         }
+
+        #endregion
+
+        #region Playback
+
+        public void Play()
+        {
+            if (!_isInitialized || playbackDevice == null)
+                return;
+
+            if (playbackDevice.PlaybackState != PlaybackState.Playing)
+                playbackDevice.Play();
+        }
+
+        public void Pause()
+        {
+            playbackDevice?.Pause();
+        }
+
+        public void Stop() => playbackDevice?.Stop();
 
         public void Seek(TimeSpan position)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                _isSeeking = true;
+                if (Beatmap == null) return;
 
+                _isSeeking = true;
                 bool wasPlaying = PlaybackState == PlaybackState.Playing;
 
-                Stop();
                 CloseFile();
                 EnsureDeviceCreated();
                 OpenFile(position);
 
-                if (wasPlaying) Play();
+                if (wasPlaying)
+                    Play();
 
                 _isSeeking = false;
             });
         }
 
+        #endregion
+
+        #region Events
+
+        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (fileStream == null || _isSeeking) return;
+
+                double remaining = (fileStream.TotalTime - fileStream.CurrentTime).TotalSeconds;
+                bool ended = remaining < 1.5 || fileStream.Position >= fileStream.Length;
+
+                if (ended)
+                {
+                    CloseFile();
+                    BeatmapEnded?.Invoke(this, new BeatmapEventArgs(Beatmap));
+                }
+            });
+        }
+
+        #endregion
+
+        #region Dispose
+
         public void Dispose()
         {
-            Stop();
             CloseFile();
             playbackDevice?.Dispose();
         }
+
+        #endregion
     }
 }

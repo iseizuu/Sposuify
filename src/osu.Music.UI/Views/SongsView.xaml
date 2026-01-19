@@ -6,8 +6,13 @@
              xmlns:local="clr-namespace:Osu.Music.UI.Views"
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:m="clr-namespace:Osu.Music.Common.Models;assembly=Osu.Music.Common"
+             xmlns:conv="clr-namespace:Osu.Music.Common.Utility;assembly=Osu.Music.Common"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <conv:BeatmapCoverConverter x:Key="BeatmapCover"/>
+    </UserControl.Resources>
     <Grid>
         <Border BorderBrush="{DynamicResource SolidColorBrushMainBorder}" BorderThickness="1" CornerRadius="10" Margin="5" Padding="0 0 0 5">
             <Grid>
@@ -36,14 +41,16 @@
                             Command="{Binding DataContext.SearchCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}"
                             CommandParameter="{Binding ElementName=SearchField, Path=Text}"/>
                 </Grid>
-                <ListView x:Name="SongsList" Style="{DynamicResource ListViewBeatmaps}" Grid.Row="1" 
-                  ItemsSource="{Binding BeatmapsView}" 
-                  SelectedItem="{Binding DataContext.Model.SelectedBeatmap, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}" 
-                  Tag="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}"
-                  HorizontalContentAlignment="Stretch">
+                <ListView x:Name="SongsList" Style="{DynamicResource ListViewBeatmaps}" Grid.Row="1"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ItemsSource="{Binding BeatmapsView}" 
+                          SelectedItem="{Binding DataContext.Model.SelectedBeatmap, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}" 
+                          Tag="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}"
+                          HorizontalContentAlignment="Stretch">
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type m:Beatmap}">
-                            <Grid>
+                            <Grid Height="56" Margin="4 2">
                                 <Grid.InputBindings>
                                     <MouseBinding Gesture="LeftDoubleClick" 
                                           Command="{Binding DataContext.PlayBeatmapAndUpdateCollectionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainView}}}">
@@ -56,22 +63,43 @@
                                     </MouseBinding>
                                 </Grid.InputBindings>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{Binding ElementName=SongsList, Path=ActualWidth, Converter={StaticResource SongTitleColumnConverter}}"/>
-                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="56"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"/>
-                                </Grid.RowDefinitions>
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Style="{DynamicResource TitleStyle}" Text="{Binding Path=Title}" 
-                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Foreground}"/>
-                                    <TextBlock Style="{DynamicResource ArtistStyle}" Text="{Binding Path=Artist}" Margin="0 5 0 0"
-                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Foreground}"/>
-                                </StackPanel>
 
-                                <TextBlock Style="{DynamicResource TitleStyle}" Grid.Column="1" 
-                                   Text="{Binding Path=TotalTime, Converter={StaticResource TimeSpanToStringConverter}, FallbackValue=''}" 
-                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Foreground}"
+                                <!-- COVER IMG HEREEEEE -->
+                                <Border Width="48" Height="48" CornerRadius="6" Margin="4"
+                                        Background="{DynamicResource SolidColorBrushMainLight}">
+                                    <Image Stretch="UniformToFill"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           Source="{Binding Converter={StaticResource BeatmapCover}, ConverterParameter=Thumbnail}"/>
+                                </Border>
+
+                                <!-- TITLE + ARTIST HERE -->
+                                <Grid Grid.Column="1" VerticalAlignment="Center" Margin="8 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Style="{DynamicResource TitleStyle}"
+                                               Grid.Row="0"
+                                               TextTrimming="CharacterEllipsis"
+                                               TextWrapping="NoWrap"
+                                               Text="{Binding Title}"
+                                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Foreground}"/>
+
+                                    <TextBlock Style="{DynamicResource ArtistStyle}"
+                                               Grid.Row="1"
+                                               Text="{Binding Artist}"
+                                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Foreground}"/>
+                                </Grid>
+
+                                <!-- DURATION HERE -->
+                                <TextBlock Style="{DynamicResource TitleStyle}"
+                                   Grid.Column="2"
+                                   Text="{Binding TotalTime, Converter={StaticResource TimeSpanToStringConverter}}"
+                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem}, Path=Foreground}"
                                    HorizontalAlignment="Right"/>
                             </Grid>
                         </DataTemplate>

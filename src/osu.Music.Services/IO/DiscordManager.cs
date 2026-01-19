@@ -51,6 +51,7 @@ namespace Osu.Music.Services.IO
 
         public void Deinitialize()
         {
+            if (!Client.IsInitialized) return;
             Client?.ClearPresence();
             Client?.Deinitialize();
         }
@@ -76,7 +77,7 @@ namespace Osu.Music.Services.IO
                 {
                     new Button
                     {
-                        Label = "Sposuify",
+                        Label = $"Sposuify {Assembly.GetEntryAssembly()?.GetName().Version}",
                         Url = "https://github.com/iseizuu/Sposuify/releases"
                     }
                 }
@@ -85,6 +86,41 @@ namespace Osu.Music.Services.IO
             Client.SetPresence(_presence);
         }
 
+        // ?? sstt i dont want to messing with Update()
+        public async void UpdateWithPosition(Beatmap beatmap, TimeSpan currentPosition)
+        {
+            if (!Enabled || !Client.IsInitialized || beatmap == null)
+                return;
+
+            _trackDuration = beatmap.TotalTime;
+
+            _trackStartUtc = DateTimeOffset.UtcNow - currentPosition;
+
+            var assets = await GetAssetsAsync(beatmap);
+
+            _presence = new RichPresence
+            {
+                Type = ActivityType.Listening,
+                Details = beatmap.Title,
+                State = beatmap.Artist,
+                Assets = assets,
+                Timestamps = new Timestamps
+                {
+                    StartUnixMilliseconds = (ulong)_trackStartUtc.ToUnixTimeMilliseconds(),
+                    EndUnixMilliseconds = (ulong)(_trackStartUtc + _trackDuration).ToUnixTimeMilliseconds()
+                },
+                Buttons = new[]
+                {
+            new Button
+            {
+                Label = $"Sposuify {Assembly.GetEntryAssembly()?.GetName().Version}",
+                Url = "https://github.com/iseizuu/Sposuify/releases"
+            }
+        }
+            };
+
+            Client.SetPresence(_presence);
+        }
 
         public void Pause()
         {
@@ -95,6 +131,18 @@ namespace Osu.Music.Services.IO
             _presence.Assets.SmallImageText = "Paused";
 
             Client.SetPresence(_presence);
+        }
+
+        public void Stop()
+        {
+            if (_presence == null) return;
+
+            _presence.Timestamps = null;
+            _presence.Assets.SmallImageKey = "pause";
+            _presence.Assets.SmallImageText = "Stopped";
+
+            Client.SetPresence(_presence);
+
         }
 
         public void Resume(TimeSpan currentPosition)

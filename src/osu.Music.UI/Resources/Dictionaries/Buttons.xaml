@@ -342,7 +342,6 @@
         <Setter Property="Content">
             <Setter.Value>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <!--<TextBlock x:Name="Logo" FontFamily="{DynamicResource MaterialIconsOutlined}" FontSize="19" Text="&#xe039;" Margin="0 0 3 0" VerticalAlignment="Center"/>-->
                     <TextBlock Text="Sposuify" VerticalAlignment="Center"/>
                 </StackPanel>
             </Setter.Value>

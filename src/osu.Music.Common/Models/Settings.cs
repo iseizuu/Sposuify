@@ -4,6 +4,7 @@ using Prism.Mvvm;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
+using System;
 
 namespace Osu.Music.Common.Models
 {
@@ -21,7 +22,7 @@ namespace Osu.Music.Common.Models
 
                 var normalized = Path.GetFullPath(value.TrimEnd('\\', '/'));
 
-                if (string.Equals(_osuFolder, normalized, System.StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(_osuFolder, normalized, StringComparison.OrdinalIgnoreCase))
                     return;
 
                 SetProperty(ref _osuFolder, normalized);
@@ -50,24 +51,32 @@ namespace Osu.Music.Common.Models
             set => SetProperty(ref _hotkeys, value);
         }
 
-        private bool _discordRpcEnabled;
-        public bool DiscordRpcEnabled
-        {
-            get => _discordRpcEnabled;
-            set => SetProperty(ref _discordRpcEnabled, value);
-        }
-
         private PlayerState _state;
         public PlayerState State
         {
             get => _state;
             set => SetProperty(ref _state, value);
         }
+
+        private bool _discordRpcEnabled = true;
+        public bool DiscordRpcEnabled
+        {
+            get => _discordRpcEnabled;
+            set
+            {
+                if (SetProperty(ref _discordRpcEnabled, value))
+                {
+                    DiscordRpcEnabledChanged?.Invoke(value);
+                }
+            }
+        }
         #endregion
 
         #region Events
         public delegate void OsuFolderChangedEventHander(string path);
         public event OsuFolderChangedEventHander OsuFolderChanged;
+
+        public event Action<bool> DiscordRpcEnabledChanged;
         #endregion
 
         public Settings()
@@ -75,6 +84,7 @@ namespace Osu.Music.Common.Models
             MainColor = "#FF800080";
             HotkeysEnabled = true;
             DiscordRpcEnabled = true;
+
             State = new PlayerState()
             {
                 Volume = 0.3f,
@@ -93,84 +103,42 @@ namespace Osu.Music.Common.Models
                 new Hotkey()
                 {
                     Type = HotkeyType.PlayPause,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        ShiftPressed = true,
-                        Key = Keys.D
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, ShiftPressed = true, Key = Keys.D }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.PreviousTrack,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        ShiftPressed = true,
-                        Key = Keys.Left
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, ShiftPressed = true, Key = Keys.Left }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.NextTrack,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        ShiftPressed = true,
-                        Key = Keys.Right
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, ShiftPressed = true, Key = Keys.Right }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.Mute,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        Key = Keys.M
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, Key = Keys.M }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.Shuffle,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        Key = Keys.S
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, Key = Keys.S }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.Repeat,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        Key = Keys.R
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, Key = Keys.R }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.VolumeUp,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        Key = Keys.Up
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, Key = Keys.Up }
                 },
-
                 new Hotkey()
                 {
                     Type = HotkeyType.VolumeDown,
-                    Combination = new KeyCombination()
-                    {
-                        ControlPressed = true,
-                        Key = Keys.Down
-                    }
+                    Combination = new KeyCombination() { ControlPressed = true, Key = Keys.Down }
                 }
             };
         }

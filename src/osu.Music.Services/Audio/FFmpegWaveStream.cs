@@ -21,6 +21,8 @@ public class FFmpegWaveStream : WaveStream
 
     public FFmpegWaveStream(string file, TimeSpan? start = null)
     {
+        file = Path.GetFullPath(file);
+
         _startOffset = start ?? TimeSpan.Zero;
         _format = new WaveFormat(44100, 16, 2);
 

@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -132,6 +133,7 @@ namespace Osu.Music.UI.ViewModels
         {
             Settings = SettingsManager.Load();
             Settings.OsuFolderChanged += Settings_OsuFolderChanged;
+            Settings.DiscordRpcEnabledChanged += OnDiscordRpcChanged;
 
             ResourceDictionary resource = Application.Current.Resources;
             resource.MergedDictionaries.SetMainColor(Settings.MainColor);
@@ -247,6 +249,29 @@ namespace Osu.Music.UI.ViewModels
             }
         }
 
+        private void OnDiscordRpcChanged(bool enabled)
+        {
+            if (enabled)
+            {
+                DiscordManager?.Dispose();
+
+                DiscordManager = new DiscordManager()
+                {
+                    Enabled = true
+                };
+
+                DiscordManager.Initialize();
+
+                if (Model.PlayingBeatmap != null)
+                {
+                    DiscordManager.UpdateWithPosition(Model.PlayingBeatmap, Playback.CurrentTime);
+                }
+            }
+            else
+            {
+                DiscordManager?.Dispose();
+            }
+        }
 
         private void MuteVolume(bool? mute)
         {
@@ -278,6 +303,7 @@ namespace Osu.Music.UI.ViewModels
             else if (Playback.PlaybackState == NAudio.Wave.PlaybackState.Stopped)
             {
                 Playback.Load(); 
+                DiscordManager.Update(Model.PlayingBeatmap);
             }
 
             if (Playback.PlaybackState == NAudio.Wave.PlaybackState.Paused)
@@ -304,6 +330,7 @@ namespace Osu.Music.UI.ViewModels
         private void StopBeatmap(Beatmap beatmap)
         {
             Playback.Stop();
+            DiscordManager.Stop();
         }
 
         private void PreviousBeatmap(Beatmap beatmap)
@@ -331,15 +358,38 @@ namespace Osu.Music.UI.ViewModels
             Playback.Play();
         }
 
+        private bool _isSwitching;
+
         private void NextBeatmap(Beatmap beatmap)
         {
-            int index = GetNextMapIndex(beatmap);
+            if (_isSwitching)
+                return;
 
-            if (beatmap != null)
-                Model.PreviousBeatmaps.Push(Playback.Beatmap);
+            _isSwitching = true;
 
-            Model.SelectedBeatmap = Model.SelectedBeatmaps[index];
-            PlayBeatmap(Model.SelectedBeatmap);
+            try
+            {
+                if (Model?.SelectedBeatmaps == null || Model.SelectedBeatmaps.Count == 0)
+                    return;
+
+                int index = GetNextMapIndex(beatmap);
+                if (index < 0 || index >= Model.SelectedBeatmaps.Count)
+                    return;
+
+                if (Playback?.Beatmap != null)
+                    Model.PreviousBeatmaps.Push(Playback.Beatmap);
+
+                var next = Model.SelectedBeatmaps[index];
+                if (next == null)
+                    return;
+
+                Model.SelectedBeatmap = next;
+                PlayBeatmap(next);
+            }
+            finally
+            {
+                _isSwitching = false;
+            }
         }
 
         private int GetNextMapIndex(Beatmap beatmap)
@@ -548,23 +598,31 @@ namespace Osu.Music.UI.ViewModels
             Model.PlaybackInitializationRequired = Settings.State.SelectedBeatmapId.HasValue;
         }
 
-        private void LoadSavedPlayback()
+        private async void LoadSavedPlayback()
         {
-            var beatmap = Model.Beatmaps.Where(x => x.BeatmapSetId == Settings.State.SelectedBeatmapId).FirstOrDefault();
+            var beatmap = Model.Beatmaps
+                .FirstOrDefault(x => x.BeatmapSetId == Settings.State.SelectedBeatmapId);
 
-            if (beatmap != null)
-            {
-                Model.SelectedBeatmap = beatmap;
-                Model.PlayingBeatmap = beatmap;
-                Model.SelectedBeatmaps = Model.Beatmaps;
+            if (beatmap == null)
+                return;
 
-                Playback.Beatmap = beatmap;
-                Playback.Load();
-                Playback.Position = Settings.State.Position;
+            Model.SelectedBeatmap = beatmap;
+            Model.PlayingBeatmap = beatmap;
+            Model.SelectedBeatmaps = Model.Beatmaps;
 
-                if (Settings.State.IsPlaying)
-                    Playback.Play();
-            }
+            Playback.Beatmap = beatmap;
+
+            var resumeTime = TimeSpan.FromMilliseconds(Settings.State.Position);
+
+            Playback.Load();
+
+            await Task.Delay(150);
+
+            if (Settings.State.IsPlaying)
+                Playback.Play();
+
+            if (Settings.DiscordRpcEnabled)
+                DiscordManager.Update(beatmap);
         }
         #endregion
 

@@ -8,14 +8,18 @@
 
 Head over to the **Release Page**  
 
-- Download: [UPDATE V.2.0.1](https://github.com/iseizuu/Sposuify/releases)  
+- Download: [UPDATE V.2.0.2](https://github.com/iseizuu/Sposuify/releases)  
 
 ---
 
-## Changelogs
+## Changelog v2.0.2
 
-- Fixed FFmpeg audio stream stopping after **5 minutes**
-- Fixed crash when osu! is installed in a **custom drive** (for example `F:\osu!`)
+- Fixed multiple Discord RPC issues not appearing in various playback states.
+- Fixed crash when toggling RPC settings.
+- Fixed crash when switching to the next song.
+- Improved next-song logic to prevent unexpected crashes.
+- Improved playback handling and safety checks.
+- Song thumbnail preview in song list.
 
 ---
 
@@ -58,7 +62,6 @@ Original project: https://github.com/Laritello/osu-music
 ---
 
 ## Screenshots
+<a href="https://ibb.co.com/m5mn228n"><img src="https://i.ibb.co.com/xqynBBHn/image.png" alt="image" border="2"></a>
 
-<a href="https://ibb.co.com/5W82p435"><img src="https://i.ibb.co.com/QFNXSQV6/image.png" alt="image" border="0"></a>
-
-<a href="https://imgbb.com/"><img src="https://i.ibb.co.com/Hp4z7L5h/image.png" alt="image" border="0"></a>
+<a href="https://imgbb.com/"><img src="https://i.ibb.co.com/Hp4z7L5h/image.png" alt="image" border="2"></a>
